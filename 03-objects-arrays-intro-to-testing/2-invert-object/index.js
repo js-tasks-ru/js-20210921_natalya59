@@ -1,8 +1,5 @@
-/**
- * invertObj - should swap object keys and values
- * @param {object} obj - the initial object
- * @returns {object | undefined} - returns new object or undefined if nothing did't pass
- */
 export function invertObj(obj) {
-
+  if (!obj) return undefined;
+  const objMap = Object.entries(obj);
+  return objMap.length === 0 ? {} : Object.fromEntries(objMap.map(([key, value]) => [value, key]));
 }
