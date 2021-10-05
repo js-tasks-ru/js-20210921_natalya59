@@ -45,9 +45,8 @@ export default class ColumnChart {
   }
 
   getTemplate() {
-    const skeleton = `<img src="charts-skeleton.svg" alt="skeleton" />`;
     if (!this.props) return `<div data-element="body" class="column-chart_loading">
-                              ${skeleton}
+                              ${this.skeleton}
                             </div>`;
 
     const chartLink = this.link ? `<a href="${this.link}" class="column-chart__link">View all</a>` : '';
