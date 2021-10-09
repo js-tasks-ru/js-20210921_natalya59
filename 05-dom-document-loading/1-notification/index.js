@@ -1,8 +1,9 @@
 export default class NotificationMessage {
+  static activeNotification;
   element;
   toSeconds = (value) => value/1000;
 
-  constructor(message = '', {duration = 0, type='success'} = {}) {
+  constructor(message = '', {duration = 2000, type='success'} = {}) {
     this.message = message;
     this.duration = duration;
     this.type = type;
@@ -15,12 +16,11 @@ export default class NotificationMessage {
     this.element = wrapper.firstElementChild;
   }
 
-  show(target) {
-    if (target) {
-      target.insertAdjacentElement('afterend', this.element);
-      this.element = target;
-    } else this.element.replaceWith(this.element);
-    setTimeout(() => {this.remove()}, this.duration)
+  show(target = document.body) {
+    if (NotificationMessage.activeNotification) NotificationMessage.activeNotification.remove();
+    target.append(this.element);
+    setTimeout(() => {this.remove()}, this.duration);
+    NotificationMessage.activeNotification = this.element;
   }
 
   createTemplate() {
@@ -36,7 +36,9 @@ export default class NotificationMessage {
   }
 
   remove() {
-    this.element.remove();
+    if (this.element) {
+      this.element.remove();
+    }
   }
 
   destroy() {
