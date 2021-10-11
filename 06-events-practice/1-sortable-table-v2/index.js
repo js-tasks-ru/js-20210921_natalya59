@@ -9,8 +9,8 @@ export default class SortableTable {
   } = {}, isSortLocally = false,) {
     this.headerConfig = headersConfig;
     this.data = Array.isArray(data) ? data : data.data;
-    this.sortedId = sorted.id ?? 'sales';
-    this.sortedOrder = sorted.order ?? 'desc';
+    this.sortedId = sorted?.id ?? this.headerConfig.find(item => item.sortable).id;
+    this.sortedOrder = sorted?.order ?? 'desc';
     this.isSortLocally = isSortLocally;
 
     this.render();
@@ -87,6 +87,7 @@ export default class SortableTable {
   }
 
   sort() {
+    console.log(this.sortedOrder);
     const sortedData = this.sortData(this.sortedId, this.sortedOrder);
     const allColumns = this.element.querySelectorAll('.sortable-table__cell[data-id]');
     const currentColumn = this.element.querySelector(`.sortable-table__cell[data-id="${this.sortedId}"]`);
@@ -137,28 +138,27 @@ export default class SortableTable {
   }
 
   handleClick = (event) => {
-    const columName = event.path[0].innerText;
-    const {id} = this.headerConfig.find(({title}) => title === columName);
+    const columnName = event.path[0].innerText;
+    const {id} = this.headerConfig.find(({title}) => title === columnName);
     if (this.sortedId === id) {
       this.sortedOrder = this.sortedOrder === 'asc'? 'desc' : 'asc';
-      this.sort();
     } else {
       this.sortedId = id;
-      this.sort();
+      this.sortedOrder = 'desc';
     }
+    this.sort();
   }
 
   addEventListeners() {
     this.titleNodes = this.element.querySelectorAll('.sortable-table__cell[data-sortable=true] > span:first-child');
     this.titleNodes.forEach((node) => {
-      node.addEventListener('click', this.handleClick);
+      node.addEventListener('pointerdown', this.handleClick, {bubbles: true});
     })
   }
 
   removeEventListeners() {
     this.titleNodes.forEach((node) => {
-      node.removeEventListener('click', this.handleClick, {
-      bubbles: true});
+      node.removeEventListener('pointerdown', this.handleClick, {bubbles: true});
     })
   }
 
