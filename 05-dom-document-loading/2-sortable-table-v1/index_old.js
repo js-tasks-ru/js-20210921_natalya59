@@ -30,22 +30,30 @@ export default class SortableTable {
   }
 
   createBody() {
-    const templateFunction = this.headerConfig.find(({id}) => id === 'images')?.template;
-    const productsData = this.data.map(({title = '', quantity = 0, price = 0, sales = 0, images = [], id = ''}) => {
-      const image = templateFunction? templateFunction(images) : '';
+    const rowsData = this.data.map(item => {
       return `
-      <a href="/products/${id}}" class="sortable-table__row">
-        ${image}
-        <div class="sortable-table__cell">${title}</div>
-
-        <div class="sortable-table__cell">${quantity}</div>
-        <div class="sortable-table__cell">${price}</div>
-        <div class="sortable-table__cell">${sales}</div>
-      </a>
-      `
-    });
+        <a href="/products/${item.id}" class="sortable-table__row">
+          ${this.getTableRow(item)}
+        </a>`;
+    }).join('');
     return ` <div data-element="body" class="sortable-table__body">
-      ${productsData.join('')} </div>`
+      ${rowsData}
+      </div>`
+  }
+
+  getTableRow(item) {
+    const cells = this.headerConfig.map(({id, template}) => {
+      return {
+        id,
+        template
+      };
+    });
+
+    return cells.map(({id, template}) => {
+      return template
+        ? template(item[id])
+        : `<div class="sortable-table__cell">${item[id]}</div>`;
+    }).join('');
   }
 
   createTemplate() {
