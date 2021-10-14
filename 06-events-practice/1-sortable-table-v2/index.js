@@ -40,25 +40,39 @@ export default class SortableTable {
     this.render();
   }
 
+  render() {
+    const wrapper = document.createElement('div');
+    const sortedData = this.sortData(this.sortedId, this.sortedOrder);
+    wrapper.innerHTML = this.getTable(sortedData);
+    const element = wrapper.firstElementChild;
+    this.element = element;
+    this.subElements = this.getSubElements(element);
+    this.initEventListeners();
+  }
+
+  initEventListeners() {
+    this.subElements.header.addEventListener('pointerdown', this.handleClick);
+  }
+
   getTableHeader() {
     return `<div data-element="header" class="sortable-table__header sortable-table__row">
       ${this.headerConfig.map(item => this.getHeaderRow(item)).join('')}
     </div>`;
   }
 
-  getHeaderRow({id, title, sortable}) {
+  getHeaderRow ({id, title, sortable}) {
     const order = this.sortedId === id ? this.sortedOrder : 'asc';
     return `
       <div class="sortable-table__cell" data-id="${id}" data-sortable="${sortable}" data-order="${order}">
         <span>${title}</span>
-         ${this.getHeaderSortingArrow(id)}
+        ${this.getHeaderSortingArrow(id)}
       </div>
     `;
   }
   getHeaderSortingArrow (id) {
     const isOrderExist = this.sortedId === id ? this.sortedOrder : '';
     return isOrderExist
-      ? `<span class="sortable-table__sort-arrow" data-element="arrow">
+      ? `<span data-element="arrow" class="sortable-table__sort-arrow">
           <span class="sort-arrow"></span>
         </span>`
       : '';
@@ -98,22 +112,6 @@ export default class SortableTable {
         ${this.getTableHeader()}
         ${this.getTableBody(data)}
       </div>`;
-  }
-
-  render() {
-    const wrapper = document.createElement('div');
-    const sortedData = this.sortData(this.sortedId, this.sortedOrder);
-    wrapper.innerHTML = this.getTable(sortedData);
-    const element = wrapper.firstElementChild;
-    this.element = element;
-    this.subElements = this.getSubElements(element);
-    this.initEventListeners();
-  }
-
-  initEventListeners() {
-    this.subElements.header.addEventListener('pointerdown', this.handleClick, {
-      bubbles: true
-    });
   }
 
   sortData(field, order) {
