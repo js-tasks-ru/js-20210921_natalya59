@@ -7,7 +7,6 @@ export default class ColumnChart {
   subElements = {};
   chartHeight = 50;
   data = {};
-  value = 0;
 
   constructor({
                 url = '',
@@ -16,14 +15,15 @@ export default class ColumnChart {
                 range =  {
                   from: {},
                   to: {}},
-                formatHeading = data => data
+                formatHeading = data => data,
+                value = '',
               } = {}) {
     this.url =  BACKEND_URL + '/' + url;
     this.range = {from: range.from, to: range.to};
     this.label = label;
     this.link = link;
     this.formatHeading = formatHeading;
-    this.value = formatHeading(this.value);
+    this.value = formatHeading(value);
 
     this.render();
     this.update();
@@ -104,7 +104,7 @@ export default class ColumnChart {
     if (!isNaN(from.valueOf())) range.from  = from.toISOString();
     if (!isNaN(to.valueOf())) range.to = to.toISOString();
     const url = new URL(this.url);
-    Object.entries(range).forEach(([key, value]) => url.searchParams.append(key, value));
+    Object.entries(range).forEach(([key, value]) => {if (value) url.searchParams.append(key, value)});
     const data = await fetchJson(url);
     this.updateCallback(data);
     return data;
